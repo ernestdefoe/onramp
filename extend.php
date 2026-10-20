@@ -29,7 +29,12 @@ use Illuminate\Console\Scheduling\Event;
 return [
     (new Extend\Frontend('forum'))
         ->js(__DIR__.'/js/dist/forum.js')
+        // 🚨 The lazy pages' chunks. Without this they are never published
+        // and /onramp is a ChunkLoadError — while forum.js loads fine.
+        ->jsDirectory(__DIR__.'/js/dist/forum')
         ->css(__DIR__.'/less/forum.less')
+        // A pasted /onramp link loads. The staff tab on a profile rides on
+        // core's own /u/{username}/{filter} route.
         ->route('/onramp', 'onramp'),
 
     (new Extend\Frontend('admin'))
