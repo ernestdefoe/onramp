@@ -102,8 +102,15 @@ class StepInput
      */
     private function isLink(string $value): bool
     {
+        // No control characters, spaces or backslashes anywhere: browsers
+        // drop or rewrite them, so `/\evil.com` or `/<tab>/evil.com` reads
+        // as `//evil.com` — another site.
+        if (preg_match('/[\x00-\x20\x7f\\\\]/', $value)) {
+            return false;
+        }
+
         return (str_starts_with($value, '/') && ! str_starts_with($value, '//'))
-            || (bool) preg_match('#^https?://[^\s]+$#i', $value);
+            || (bool) preg_match('#^https?://[^/]#i', $value);
     }
 
     private function t(string $key): string

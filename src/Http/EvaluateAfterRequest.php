@@ -35,25 +35,33 @@ class EvaluateAfterRequest implements MiddlewareInterface
 
         try {
             $response = $handler->handle($request);
-            $mine = $this->tracker->flush();
+            // An inner API call (an extension using Flarum's own client
+            // mid-request) leaves the flush to the request around it.
+            $mine = $this->tracker->outermost() ? $this->tracker->flush() : null;
         } finally {
             $this->tracker->end();
         }
 
-        if (! $mine || ! str_contains($response->getHeaderLine('Content-Type'), 'json')) {
+        $type = strtolower(trim(explode(';', $response->getHeaderLine('Content-Type'))[0]));
+        $stream = $response->getBody();
+
+        // Only a whole JSON document can be rewritten — never a stream.
+        if (! $mine || ! in_array($type, ['application/vnd.api+json', 'application/json'], true) || ! $stream->isSeekable()) {
             return $response;
         }
 
-        $body = json_decode((string) $response->getBody(), true);
+        // 🚨 Objects, not arrays: decoded as arrays, an empty `{}` anywhere in
+        // the document would come back out as `[]`.
+        $body = json_decode((string) $stream);
 
-        if (! is_array($body) || array_is_list($body)) {
+        if (! $body instanceof \stdClass) {
             return $response;
         }
 
         $state = $this->presenter->summary($actor);
 
-        $body['meta'] = (array) ($body['meta'] ?? []);
-        $body['meta']['onramp'] = [
+        $body->meta ??= new \stdClass();
+        $body->meta->onramp = [
             'completed' => array_map(fn ($step) => $step->id, $mine['completed']),
             'graduated' => $mine['graduated'],
             'state' => $state,
@@ -68,20 +76,14 @@ class EvaluateAfterRequest implements MiddlewareInterface
          * gets the fresh journey too.
          */
         foreach (['data', 'included'] as $member) {
-            if (! isset($body[$member]) || ! is_array($body[$member])) {
-                continue;
-            }
+            $resources = $body->{$member} ?? null;
 
-            $resources = array_is_list($body[$member]) ? $body[$member] : [$body[$member]];
-
-            foreach ($resources as $i => $resource) {
-                if (($resource['type'] ?? null) === 'users' && (string) ($resource['id'] ?? '') === (string) $actor->id
-                    && is_array($resource['attributes'] ?? null) && array_key_exists('onramp', $resource['attributes'])) {
-                    $resources[$i]['attributes']['onramp'] = $state;
+            foreach (is_array($resources) ? $resources : [$resources] as $resource) {
+                if ($resource instanceof \stdClass && ($resource->type ?? null) === 'users' && (string) ($resource->id ?? '') === (string) $actor->id
+                    && ($resource->attributes ?? null) instanceof \stdClass && property_exists($resource->attributes, 'onramp')) {
+                    $resource->attributes->onramp = $state;
                 }
             }
-
-            $body[$member] = array_is_list($body[$member]) ? $resources : $resources[0];
         }
 
         $json = (string) json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);

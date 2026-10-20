@@ -28,6 +28,14 @@ class Tracker
 {
     private bool $deferring = false;
 
+    /**
+     * 🚨 Requests nest: an extension calling Flarum's own API client from
+     * inside a request runs this middleware again. Only the OUTERMOST begin
+     * starts collecting and only the outermost end flushes — otherwise the
+     * inner call's begin() threw away what the outer request had touched.
+     */
+    private int $depth = 0;
+
     private ?int $actorId = null;
 
     /** @var array<int, array<string, true>> user id => type keys */
@@ -39,9 +47,19 @@ class Tracker
 
     public function begin(?User $actor): void
     {
+        if ($this->depth++ > 0) {
+            return;
+        }
+
         $this->deferring = true;
         $this->actorId = $actor && ! $actor->isGuest() ? $actor->id : null;
         $this->pending = [];
+    }
+
+    /** Whether this is the outermost request, the one that flushes. */
+    public function outermost(): bool
+    {
+        return $this->depth <= 1;
     }
 
     public function touch(int $userId, string $type): void
@@ -91,6 +109,11 @@ class Tracker
 
     public function end(): void
     {
+        if (--$this->depth > 0) {
+            return;
+        }
+
+        $this->depth = 0;
         $this->deferring = false;
         $this->actorId = null;
         $this->pending = [];

@@ -32,10 +32,14 @@ class MemberController implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $actor = RequestUtil::getActor($request);
+
+        // Permission first: checked after the lookup, a 403 for a real id and
+        // a 404 for a missing one told anybody which ids exist.
+        $request->getMethod() === 'POST' ? $actor->assertAdmin() : $actor->assertCan('onramp.viewMembers');
+
         $user = User::query()->findOrFail((int) ($request->getQueryParams()['id'] ?? 0));
 
         if ($request->getMethod() === 'POST') {
-            $actor->assertAdmin();
             $body = (array) $request->getParsedBody();
             $action = (string) ($body['action'] ?? '');
 
@@ -50,8 +54,6 @@ class MemberController implements RequestHandlerInterface
                 'reopen' => $this->journeys->reopen($user),
                 'complete' => $this->complete($user, (int) ($body['step'] ?? 0)),
             };
-        } else {
-            $actor->assertCan('onramp.viewMembers');
         }
 
         return new JsonResponse(['data' => $this->presenter->full($user)]);

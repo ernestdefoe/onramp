@@ -69,12 +69,21 @@ app.initializers.add('ernestdefoe/onramp', () => {
    */
   override(app, 'request', function (original: any, options: any) {
     return original(options).then((res: any) => {
-      const meta: OnrampMeta | undefined = res && typeof res === 'object' ? res.meta?.onramp : undefined;
-      if (meta) {
-        if (meta.state !== undefined) remember(meta.state ?? null);
-        celebrate(meta, meta.state);
-        m.redraw();
+      // Only the forum's own API speaks for Onramp: a response from anywhere
+      // else (an extension calling an outside service) is never read.
+      const url = String(options?.url || '');
+      const meta = url.startsWith(app.forum.attribute<string>('apiUrl')) && res && typeof res === 'object' ? res.meta?.onramp : undefined;
+
+      if (meta && Array.isArray(meta.completed)) {
+        try {
+          if (meta.state !== undefined) remember(meta.state ?? null);
+          celebrate(meta, meta.state);
+          m.redraw();
+        } catch (e) {
+          // The member's own request succeeded; a toast is never worth failing it.
+        }
       }
+
       return res;
     });
   });

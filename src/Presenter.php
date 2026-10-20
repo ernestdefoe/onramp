@@ -54,7 +54,7 @@ class Presenter
             ->keyBy('step_id');
 
         $badges = $this->badges($steps->pluck('badge_id')->push($this->config->rewardBadge())->filter()->unique()->values()->all());
-        $tags = $this->tags($steps->map(fn (Step $s) => (int) ($s->settings()['tag'] ?? 0))->filter()->unique()->values()->all());
+        $tags = $this->tags($user, $steps->map(fn (Step $s) => (int) ($s->settings()['tag'] ?? 0))->filter()->unique()->values()->all());
         $points = $this->rewards->pointsAvailable();
 
         $views = $steps->map(function (Step $step) use ($user, $rows, $badges, $tags, $points, $live, $journey) {
@@ -132,18 +132,23 @@ class Presenter
     }
 
     /**
+     * The tags steps are limited to — only those this member can see. A
+     * restricted tag's name never reaches someone it is hidden from; the step
+     * just shows the type's own wording.
+     *
      * @param list<int> $ids
      * @return array<int, array<string, mixed>>
      */
-    private function tags(array $ids): array
+    private function tags(User $user, array $ids): array
     {
         if (! $ids || ! $this->extensions->isEnabled('flarum-tags')) {
             return [];
         }
 
-        return $this->db->table('tags')
-            ->whereIn('id', $ids)
-            ->get(['id', 'name', 'slug'])
+        return \Flarum\Tags\Tag::query()
+            ->whereVisibleTo($user)
+            ->whereIn('tags.id', $ids)
+            ->get(['tags.id', 'tags.name', 'tags.slug'])
             ->mapWithKeys(fn ($t) => [(int) $t->id => ['id' => (int) $t->id, 'name' => $t->name, 'slug' => $t->slug]])
             ->all();
     }
