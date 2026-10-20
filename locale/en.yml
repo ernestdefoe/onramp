@@ -1,0 +1,8 @@
+ernestdefoe-onramp:
+  lib:
+    errors:
+      type: That step type is not available on this forum.
+      count: Use a number from 1 to 1000.
+      path: Use a forum path starting with / or a full http(s) address.
+      too_long: That is too long.
+      points: Use a number of points from 0 to 100000.

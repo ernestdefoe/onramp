@@ -1,0 +1,107 @@
+{
+    "name": "ernestdefoe/onramp",
+    "description": "Onramp — onboarding quests that turn new sign-ups into regulars. A short checklist that ticks itself as members do each step, rewards with FoF Badges and FoF Gamification points, and a funnel that shows where newcomers stop.",
+    "keywords": [
+        "flarum",
+        "flarum-extension",
+        "onboarding",
+        "quests",
+        "gamification",
+        "badges",
+        "engagement"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ernest Defoe",
+            "email": "ernestdefoe@gmail.com"
+        }
+    ],
+    "homepage": "https://github.com/ernestdefoe/onramp",
+    "support": {
+        "issues": "https://github.com/ernestdefoe/onramp/issues",
+        "source": "https://github.com/ernestdefoe/onramp"
+    },
+    "require": {
+        "php": "^8.3",
+        "flarum/core": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ErnestDefoe\\Onramp\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ErnestDefoe\\Onramp\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Onramp",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-route",
+                "backgroundColor": "#2563eb",
+                "color": "#fff"
+            },
+            "optional-dependencies": [
+                "flarum/likes",
+                "flarum/mentions",
+                "flarum/messages",
+                "flarum/nicknames",
+                "flarum/subscriptions",
+                "flarum/tags",
+                "fof/badges",
+                "fof/best-answer",
+                "fof/byobu",
+                "fof/follow-tags",
+                "fof/gamification",
+                "fof/polls",
+                "fof/reactions",
+                "fof/upload",
+                "fof/user-bio",
+                "ernestdefoe/cadence"
+            ]
+        }
+    },
+    "require-dev": {
+        "flarum/likes": "^2.0",
+        "flarum/mentions": "^2.0",
+        "flarum/messages": "^2.0",
+        "flarum/nicknames": "^2.0",
+        "flarum/phpstan": "^2.0",
+        "flarum/subscriptions": "^2.0",
+        "flarum/tags": "^2.0",
+        "flarum/testing": "^2.0",
+        "fof/badges": "^2.0",
+        "fof/best-answer": "^2.0",
+        "fof/byobu": "^2.0",
+        "fof/follow-tags": "^2.0",
+        "fof/gamification": "^2.0",
+        "fof/polls": "^3.0",
+        "fof/reactions": "^2.0",
+        "fof/upload": "^2.0",
+        "fof/user-bio": "^2.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": [
+            "@test:integration"
+        ],
+        "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:setup": "@php tests/integration/setup.php",
+        "analyse:phpstan": "phpstan analyse"
+    },
+    "scripts-descriptions": {
+        "test": "Runs all tests.",
+        "test:integration": "Runs all integration tests.",
+        "test:setup": "Sets up a database for use with integration tests. Execute this only once.",
+        "analyse:phpstan": "Run static analysis"
+    },
+    "minimum-stability": "beta",
+    "prefer-stable": true
+}
