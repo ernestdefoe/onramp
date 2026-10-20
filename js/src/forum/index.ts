@@ -17,7 +17,6 @@ import { hasFofWidgets, JourneyWidget, registerWidgets } from './widgets';
 declare const m: import('mithril').Static;
 
 export { default as Ring } from './components/Ring';
-export { default as StepRow } from './components/StepRow';
 
 app.initializers.add('ernestdefoe/onramp', () => {
   // 🚨 Both pages are their own chunks: nothing in them loads on other pages.

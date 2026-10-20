@@ -8,6 +8,9 @@ import type { JourneyView, StepView } from '../../common/types';
 import { t } from '../../common/text';
 import { act, fullJourney, loadFull } from '../state';
 import Ring from './Ring';
+import useStyles from '../styles';
+
+useStyles();
 import StepRow from './StepRow';
 
 declare const m: import('mithril').Static;

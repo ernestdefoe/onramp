@@ -1,52 +1,29 @@
 import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
-import Button from 'flarum/common/components/Button';
-import Link from 'flarum/common/components/Link';
-import { stepButton, stepTitle, t } from '../common/text';
+import { t } from '../common/text';
 import { own, showsLauncher } from './state';
-import { actionFor, run } from './actions';
-import { nextStep } from './components/Launcher';
-import Ring from './components/Ring';
+import { journeyChunk } from './lazy';
 
 declare const flarum: any;
 declare const m: import('mithril').Static;
 
 /**
- * "Your journey": the ring, the next step and its button. Drawn from the
- * member's own user — no request — and nothing at all for everyone without an
- * open journey, so placing it costs the forum's regulars nothing.
+ * "Your journey": the ring, the next step and its button — nothing at all for
+ * anyone without an open journey, so placing it costs the forum's regulars
+ * nothing, not even the code: the body is in the lazy journey chunk.
  */
 export class JourneyWidget extends Component {
+  oncreate(vnode: any) {
+    super.oncreate(vnode);
+    if (own()?.status === 'open') journeyChunk.load();
+  }
+
   view() {
     const journey = own();
     if (!journey || journey.status !== 'open') return null;
 
-    const next = nextStep(journey);
-
-    return (
-      <div className="OnrampWidget">
-        <div className="OnrampWidget-head">
-          <Ring done={journey.done + journey.skipped} total={journey.total} size={40} label={`${journey.done}/${journey.total}`} />
-          <div>
-            <h4 className="OnrampWidget-title">{t('forum.widget.title')}</h4>
-            <div className="OnrampWidget-sub">{t('forum.launcher.sub', { count: journey.total - journey.done - journey.skipped })}</div>
-          </div>
-        </div>
-        {next ? (
-          <div className="OnrampWidget-next">
-            <div className="OnrampWidget-nextTitle">{stepTitle(next)}</div>
-            {actionFor(next) ? (
-              <Button className="Button Button--primary Button--block" onclick={() => run(next)}>
-                {stepButton(next)}
-              </Button>
-            ) : null}
-          </div>
-        ) : null}
-        <Link className="OnrampWidget-link" href={app.route('onramp')}>
-          {t('forum.launcher.see_all')}
-        </Link>
-      </div>
-    );
+    const Body = journeyChunk.loaded?.WidgetBody;
+    return Body ? <Body /> : null;
   }
 }
 

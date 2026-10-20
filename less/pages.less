@@ -1,0 +1,393 @@
+// Onramp's page, panel, step and widget styles. Compiled by
+// js/tools/css.mjs into a module the lazy chunks inject (see
+// js/src/forum/styles.ts) — never part of forum.css.
+
+.OnrampPanel {
+  padding: 14px;
+
+  &-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    strong {
+      display: block;
+      font-size: 1.05em;
+    }
+  }
+
+  &-sub {
+    color: var(--muted-color);
+    font-size: 0.9em;
+  }
+
+  &-next {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: var(--border-radius);
+    background: var(--control-bg);
+  }
+
+  &-nextLabel {
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--primary-color);
+  }
+
+  &-nextTitle {
+    font-weight: 600;
+    margin: 2px 0;
+  }
+
+  &-nextText {
+    font-size: 0.88em;
+    color: var(--muted-color);
+    margin: 0 0 10px;
+    white-space: normal;
+  }
+
+  &-steps {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  &-all {
+    display: block;
+    text-align: center;
+    padding: 6px;
+    font-weight: 600;
+  }
+}
+
+// —— Steps ——————————————————————————————————————————————————————————————
+.OnrampSteps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.OnrampStep {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: var(--border-radius);
+  background: var(--body-bg);
+  border: 1px solid var(--control-bg);
+  white-space: normal;
+
+  &-marker {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9em;
+    background: var(--control-bg);
+    color: var(--control-color);
+  }
+
+  &-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  &-icon {
+    color: var(--muted-color);
+  }
+
+  &-title {
+    font-weight: 600;
+  }
+
+  &-required {
+    font-size: 0.72em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--control-bg);
+    color: var(--muted-color);
+  }
+
+  &-description {
+    margin: 4px 0 0;
+    color: var(--muted-color);
+    font-size: 0.92em;
+  }
+
+  &-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  &-bar {
+    flex: 1;
+    max-width: 220px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--control-bg);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--primary-color);
+      transition: width 0.4s ease;
+    }
+  }
+
+  &-count {
+    font-size: 0.85em;
+    color: var(--muted-color);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &-rewards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  &-side {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+  }
+
+  &-when {
+    font-size: 0.85em;
+    color: var(--muted-color);
+  }
+
+  &-skip,
+  &-undo {
+    font-size: 0.85em;
+    color: var(--muted-color);
+  }
+
+  &.is-done &-marker {
+    background: var(--primary-color);
+    color: var(--button-primary-color, #fff);
+  }
+
+  &.is-done &-title {
+    color: var(--muted-color);
+  }
+
+  &.is-skipped {
+    opacity: 0.7;
+  }
+
+  // The launcher's list: one line per step.
+  &.is-compact {
+    padding: 6px 2px;
+    border: 0;
+    background: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &.is-compact &-marker {
+    width: 22px;
+    height: 22px;
+    font-size: 0.75em;
+  }
+
+  &.is-compact &-icon {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+
+    &-side {
+      width: 100%;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    &.is-compact &-side {
+      width: auto;
+    }
+  }
+}
+
+.OnrampChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.8em;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--control-bg);
+  color: var(--control-color);
+
+  &--badge {
+    background: var(--badge-bg, var(--control-bg));
+    color: var(--badge-fg, var(--control-color));
+  }
+}
+
+// —— The page ———————————————————————————————————————————————————————————
+.OnrampPage {
+  padding: 24px 0 48px;
+
+  .container {
+    max-width: 760px;
+  }
+
+  &-empty {
+    text-align: center;
+    color: var(--muted-color);
+    padding: 60px 0;
+
+    .icon {
+      font-size: 2.4em;
+      margin-bottom: 12px;
+    }
+  }
+
+  &-footer {
+    margin-top: 20px;
+    text-align: center;
+  }
+}
+
+.OnrampHero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0 0 6px;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted-color);
+  }
+
+  .OnrampRing-label {
+    font-size: 1.5em;
+  }
+
+  &.is-graduated .OnrampRing-label {
+    color: var(--primary-color);
+  }
+
+  &-reward {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  &-rewardLabel {
+    font-size: 0.85em;
+    font-weight: 600;
+    color: var(--muted-color);
+  }
+
+  @media (max-width: 767px) {
+    flex-direction: column;
+    text-align: center;
+
+    &-reward {
+      justify-content: center;
+    }
+  }
+}
+
+// —— Staff view on a profile ————————————————————————————————————————————
+.OnrampMember {
+  &-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+
+  &-dates,
+  &-none {
+    color: var(--muted-color);
+  }
+
+  &-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+}
+
+// —— Widget —————————————————————————————————————————————————————————————
+.OnrampWidget {
+  padding: 12px;
+  border-radius: var(--border-radius);
+  background: var(--control-bg);
+  margin-bottom: 16px;
+  white-space: normal;
+
+  &-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  &-title {
+    margin: 0;
+    font-size: 1em;
+  }
+
+  &-sub {
+    font-size: 0.85em;
+    color: var(--muted-color);
+  }
+
+  &-nextTitle {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  &-link {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.88em;
+    text-align: center;
+  }
+}
+
+.OnrampFofWidget .OnrampWidget {
+  margin-bottom: 0;
+}

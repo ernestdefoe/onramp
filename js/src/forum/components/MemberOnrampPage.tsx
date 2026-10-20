@@ -7,6 +7,9 @@ import extractText from 'flarum/common/utils/extractText';
 import type { JourneyView } from '../../common/types';
 import { stepTitle, t } from '../../common/text';
 import Ring from './Ring';
+import useStyles from '../styles';
+
+useStyles();
 import StepRow from './StepRow';
 
 declare const m: import('mithril').Static;
