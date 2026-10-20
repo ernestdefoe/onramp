@@ -23,7 +23,10 @@ export default class Ring extends Component<RingAttrs> {
       <span className="OnrampRing" style={{ width: `${size}px`, height: `${size}px` }}>
         <svg viewBox="0 0 36 36" aria-hidden="true">
           <circle className="OnrampRing-track" cx="18" cy="18" r="15.915" />
-          <circle className="OnrampRing-fill" cx="18" cy="18" r="15.915" stroke-dasharray={`${share} ${100 - share}`} stroke-dashoffset="25" />
+          {/* At 0% a round line cap still draws a dot, so there is no fill at all. */}
+          {share > 0 ? (
+            <circle className="OnrampRing-fill" cx="18" cy="18" r="15.915" stroke-dasharray={`${share} ${100 - share}`} stroke-dashoffset="25" />
+          ) : null}
         </svg>
         {label !== undefined ? <span className="OnrampRing-label">{label}</span> : null}
       </span>
