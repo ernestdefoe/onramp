@@ -4,6 +4,8 @@
 
 Free and open source (MIT), for Flarum 2.
 
+![The journey page](screenshots/journey-page.png)
+
 ## What members get
 
 - **A journey that does itself.** "Put a face to your name", "Read 3 discussions", "Reply to a discussion"… Nothing to tick by hand: each step completes as the member does it, anywhere on the forum.
@@ -29,6 +31,12 @@ Free and open source (MIT), for Flarum 2.
 - **The funnel:** journeys started, finished, open and put away; how many reached each step and the median time it took; which step most of the unfinished are stuck on; a bottleneck warning; and the same per weekly cohort.
 - **A staff tab** on every member's profile (moderators see it, admins can start, reset, put away, bring back, or tick a step by hand).
 - **Journeys for members who joined before Onramp**, for whoever joined in the last N days, with everything they already did ticked straight away. It runs in batches, so no request times out.
+
+![The launcher, open](screenshots/launcher.png)
+
+![The journey editor](screenshots/admin-journey.png)
+
+![The funnel](screenshots/admin-funnel.png)
 
 ## How it behaves
 
