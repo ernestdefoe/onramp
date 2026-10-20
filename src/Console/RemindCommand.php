@@ -5,7 +5,6 @@ namespace ErnestDefoe\Onramp\Console;
 use Carbon\Carbon;
 use ErnestDefoe\Onramp\Config;
 use ErnestDefoe\Onramp\Journey;
-use ErnestDefoe\Onramp\Journeys;
 use ErnestDefoe\Onramp\Notification\ReminderBlueprint;
 use ErnestDefoe\Onramp\Presenter;
 use Flarum\Console\AbstractCommand;
@@ -30,7 +29,6 @@ class RemindCommand extends AbstractCommand
 
     public function __construct(
         private Config $config,
-        private Journeys $journeys,
         private Presenter $presenter,
         private NotificationSyncer $notifications,
         private TranslatorInterface $translator,

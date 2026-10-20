@@ -82,17 +82,17 @@ class FunnelController implements RequestHandlerInterface
                 ->cursor();
 
             foreach ($rows as $row) {
-                if (! isset($journeys[(int) $row->user_id])) {
+                $uid = (int) $row->user_id;
+
+                if (! isset($journeys[$uid])) {
                     continue;
                 }
 
-                $j = &$journeys[(int) $row->user_id];
                 $step = (int) $row->step_id;
-                $j['done'][$step] = true;
+                $journeys[$uid]['done'][$step] = true;
                 $reached[$step]++;
-                $cohorts[$j['week']]['steps'][$step]++;
-                $hours[$step][] = max(0, $j['at']->diffInMinutes(Carbon::parse($row->completed_at))) / 60;
-                unset($j);
+                $cohorts[$journeys[$uid]['week']]['steps'][$step]++;
+                $hours[$step][] = max(0, $journeys[$uid]['at']->diffInMinutes(Carbon::parse($row->completed_at))) / 60;
             }
         }
 

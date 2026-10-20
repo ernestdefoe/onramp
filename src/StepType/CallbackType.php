@@ -13,7 +13,7 @@ use Flarum\User\User;
 final class CallbackType extends StepType
 {
     /**
-     * @param array<class-string, callable(object): mixed> $events
+     * @param array<string, callable(object): mixed> $events
      * @param Closure(User, array<string, mixed>): int $progress
      * @param list<string> $fields
      */

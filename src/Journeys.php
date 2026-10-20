@@ -78,20 +78,25 @@ class Journeys
         $journey = $this->journey($user);
 
         if (! $journey) {
-            $this->db->table('onramp_journeys')->insertOrIgnore([
-                'user_id' => $user->id,
-                'started_at' => Carbon::now(),
-                'reminded' => 0,
-            ]);
-            $journey = $this->journey($user);
+            $row = ['user_id' => $user->id, 'started_at' => Carbon::now(), 'reminded' => 0];
+
+            // Built from what was written rather than read back; a lost race
+            // (the row was already there) reads the winner's.
+            $journey = $this->db->table('onramp_journeys')->insertOrIgnore($row) > 0
+                ? (new Journey())->forceFill($row)->syncOriginal()
+                : $this->journey($user);
+            $journey->exists = true;
         }
 
         if ($journey->isOpen()) {
             $this->setOpen($user, true);
-            $this->evaluate($user, null, $mode);
+
+            if ($this->evaluate($user, null, $mode, $journey)['graduated']) {
+                $journey->refresh();
+            }
         }
 
-        return $journey->refresh();
+        return $journey;
     }
 
     /**
@@ -102,10 +107,10 @@ class Journeys
      * @param self::* $mode
      * @return array{completed: list<Step>, graduated: bool}
      */
-    public function evaluate(User $user, ?array $typeKeys = null, int $mode = self::WATCHING): array
+    public function evaluate(User $user, ?array $typeKeys = null, int $mode = self::WATCHING, ?Journey $journey = null): array
     {
         $result = ['completed' => [], 'graduated' => false];
-        $journey = $this->journey($user);
+        $journey ??= $this->journey($user);
 
         if (! $journey || ! $journey->isOpen()) {
             return $result;

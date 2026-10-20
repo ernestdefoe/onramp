@@ -1,0 +1,213 @@
+.OnrampAdmin {
+  &-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  &-note {
+    margin-bottom: 12px;
+  }
+
+  &-list {
+    list-style: none;
+    margin: 16px 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--border-radius);
+    background: var(--body-bg);
+    border: 1px solid var(--control-bg);
+
+    &.is-disabled,
+    &.is-unavailable {
+      opacity: 0.6;
+    }
+
+    &.sortable-ghost {
+      opacity: 0.35;
+    }
+  }
+
+  &-handle {
+    cursor: grab;
+    color: var(--muted-color);
+    padding: 4px;
+    touch-action: none;
+  }
+
+  &-icon {
+    width: 20px;
+    text-align: center;
+    color: var(--muted-color);
+  }
+
+  &-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &-title {
+    font-weight: 600;
+  }
+
+  &-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--muted-color);
+    margin-top: 2px;
+  }
+
+  &-chip {
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--control-bg);
+
+    &.is-required {
+      color: var(--primary-color);
+    }
+
+    &.is-warning {
+      background: var(--alert-bg, #fff2ae);
+      color: var(--alert-color, #ad6c00);
+    }
+  }
+
+  &-empty {
+    color: var(--muted-color);
+  }
+
+  &-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &-import {
+    position: relative;
+    overflow: hidden;
+
+    input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+  }
+
+  &-start {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--control-bg);
+  }
+
+  &-startRow {
+    display: flex;
+    gap: 8px;
+    max-width: 360px;
+
+    .FormControl {
+      width: 110px;
+    }
+  }
+
+  &-funnelBar {
+    margin-bottom: 16px;
+  }
+
+  &-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  &-tile {
+    padding: 12px;
+    border-radius: var(--border-radius);
+    background: var(--control-bg);
+
+    strong {
+      display: block;
+      font-size: 1.6em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    span {
+      color: var(--muted-color);
+      font-size: 0.9em;
+    }
+  }
+
+  &-bottleneck {
+    margin-bottom: 16px;
+  }
+
+  &-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid var(--control-bg);
+      white-space: nowrap;
+    }
+
+    td:first-child {
+      white-space: normal;
+    }
+
+    tr.is-bottleneck td {
+      background: var(--control-bg);
+      font-weight: 600;
+    }
+  }
+
+  &-meter {
+    display: inline-block;
+    vertical-align: middle;
+    width: 90px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--control-bg);
+    overflow: hidden;
+
+    span {
+      display: block;
+      height: 100%;
+      background: var(--primary-color);
+    }
+  }
+
+  &-muted {
+    color: var(--muted-color);
+  }
+
+  &-scroll {
+    overflow-x: auto;
+  }
+}
+
+.OnrampStepModal-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}

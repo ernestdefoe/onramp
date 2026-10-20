@@ -103,14 +103,28 @@ class AdminStepsController implements RequestHandlerInterface
         ];
     }
 
-    /** @param list<int> $ids */
+    /**
+     * The dragged order, in ONE statement: `position = CASE id WHEN … END`.
+     *
+     * The ids are cast to int before they reach the SQL, so building the CASE
+     * as text is safe; `id` is a column, never a table, so no prefix applies.
+     *
+     * @param list<int> $ids
+     */
     private function order(array $ids): void
     {
-        $this->db->transaction(function () use ($ids) {
-            foreach (array_values(array_unique($ids)) as $position => $id) {
-                Step::query()->whereKey($id)->update(['position' => $position]);
-            }
-        });
+        $ids = array_values(array_unique(array_filter(array_map('intval', $ids), fn (int $id) => $id > 0)));
+
+        if (! $ids) {
+            return;
+        }
+
+        $case = 'CASE id';
+        foreach ($ids as $position => $id) {
+            $case .= " WHEN $id THEN $position";
+        }
+
+        $this->db->table('onramp_steps')->whereIn('id', $ids)->update(['position' => $this->db->raw($case.' END')]);
     }
 
     /**

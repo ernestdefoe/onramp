@@ -26,7 +26,10 @@ abstract class StepType
      * Events after which a member's count may have changed, each mapped to the
      * member(s) to look at again.
      *
-     * @return array<class-string, callable(object): (User|int|null|array<User|int|null>)>
+     * Keys are class NAMES, not class-strings: an optional extension's event
+     * may not exist on this forum, and the subscriber skips any that does not.
+     *
+     * @return array<string, callable(object): mixed>
      */
     abstract public function events(): array;
 

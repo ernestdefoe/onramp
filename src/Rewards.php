@@ -43,7 +43,7 @@ class Rewards
     public function points(User $user, int $points, string $key): void
     {
         if ($points !== 0 && $this->pointsAvailable()) {
-            $this->container->make(self::POINT_GRANTS)->grant($user, $points, 'onramp', $key);
+            $this->container->make(self::POINT_GRANTS)->grant($user, 'onramp', $key, $points);
         }
     }
 

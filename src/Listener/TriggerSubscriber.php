@@ -22,7 +22,7 @@ class TriggerSubscriber
 
     public function subscribe(Dispatcher $events): void
     {
-        /** @var array<class-string, list<array{string, callable}>> $map */
+        /** @var array<string, list<array{string, callable}>> $map */
         $map = [];
 
         foreach ($this->types->all() as $type) {
