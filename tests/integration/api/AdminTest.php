@@ -203,8 +203,11 @@ class AdminTest extends TestCase
     {
         $this->app();
         $this->database()->table('tags')->insert(['id' => 9, 'name' => 'Intro', 'slug' => 'intro', 'position' => 1]);
-        $this->database()->table('discussions')->insert(['id' => 2, 'title' => 'Hi', 'slug' => 'hi', 'created_at' => Carbon::now(), 'user_id' => 3, 'first_post_id' => 3, 'comment_count' => 1, 'last_post_number' => 1]);
+        // Discussion, then post, then the link between them: MySQL and
+        // PostgreSQL enforce both foreign keys.
+        $this->database()->table('discussions')->insert(['id' => 2, 'title' => 'Hi', 'slug' => 'hi', 'created_at' => Carbon::now(), 'user_id' => 3, 'comment_count' => 1, 'last_post_number' => 1]);
         $this->database()->table('posts')->insert(['id' => 3, 'discussion_id' => 2, 'number' => 1, 'created_at' => Carbon::now(), 'user_id' => 3, 'type' => 'comment', 'content' => '<t><p>Hi</p></t>']);
+        $this->database()->table('discussions')->where('id', 2)->update(['first_post_id' => 3]);
         $this->database()->table('onramp_steps')->delete();
         $this->database()->table('onramp_steps')->insert(['id' => 50, 'type' => 'discussion', 'config' => json_encode(['tag' => 9]), 'position' => 0, 'is_enabled' => true, 'points' => 0, 'is_required' => false]);
 

@@ -62,8 +62,16 @@ class BadgesTest extends TestCase
      */
     protected function allowedRepeatedQueries(): array
     {
-        // Matched without the table's opening quote, so CI's table prefixes match too.
-        return ['notifications" ("created_at", "data"', 'fof_badges"."id" = ? limit'];
+        // Matched without the table's opening quote, so CI's table prefixes
+        // match too — once per identifier quote: MySQL's backtick, everyone
+        // else's double quote.
+        $shapes = [];
+        foreach (['"', '`'] as $q) {
+            $shapes[] = "notifications$q ({$q}created_at$q, {$q}data$q";
+            $shapes[] = "fof_badges$q.{$q}id$q = ? limit";
+        }
+
+        return $shapes;
     }
 
     private function holds(int $user, int $badge): bool
