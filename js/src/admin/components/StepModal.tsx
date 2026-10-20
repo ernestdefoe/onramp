@@ -91,105 +91,112 @@ export default class StepModal extends FormModal<StepModalAttrs> {
 
     return (
       <div className="Modal-body">
-        <div className="Form-group">
-          <label>{t('admin.steps.type')}</label>
-          <Select value={this.type()} options={options} onchange={(v: string) => this.type(v)} />
-          {info?.extension ? <p className="helpText">{t('admin.steps.from_extension', { extension: info.extension })}</p> : null}
-        </div>
-
-        {fields.includes('count') ? (
+        <div className="Form">
           <div className="Form-group">
-            <label>{t('admin.steps.count')}</label>
-            <input className="FormControl" type="number" min="1" max="1000" placeholder="1" bidi={this.count} />
+            <label>{t('admin.steps.type')}</label>
+            <Select value={this.type()} options={options} onchange={(v: string) => this.type(v)} />
+            {info?.extension ? <p className="helpText">{t('admin.steps.from_extension', { extension: info.extension })}</p> : null}
           </div>
-        ) : null}
 
-        {fields.includes('tag') && tags.length ? (
+          {fields.includes('count') ? (
+            <div className="Form-group">
+              <label>{t('admin.steps.count')}</label>
+              <input className="FormControl" type="number" min="1" max="1000" placeholder="1" bidi={this.count} />
+            </div>
+          ) : null}
+
+          {fields.includes('tag') && tags.length ? (
+            <div className="Form-group">
+              <label>{t('admin.steps.tag')}</label>
+              <Select
+                value={this.tag()}
+                options={tags.reduce((o: Record<string, string>, tag: any) => ({ ...o, [tag.id()]: tag.name() }), {
+                  '': extractText(t('admin.steps.any_tag')),
+                })}
+                onchange={(v: string) => this.tag(v)}
+              />
+            </div>
+          ) : null}
+
+          {fields.includes('path') ? (
+            <div className="Form-group">
+              <label>{t('admin.steps.path')}</label>
+              <input className="FormControl" placeholder="/d/1-welcome" bidi={this.path} />
+              <p className="helpText">{t('admin.steps.path_help')}</p>
+            </div>
+          ) : null}
+
           <div className="Form-group">
-            <label>{t('admin.steps.tag')}</label>
-            <Select
-              value={this.tag()}
-              options={tags.reduce((o: Record<string, string>, tag: any) => ({ ...o, [tag.id()]: tag.name() }), {
-                '': extractText(t('admin.steps.any_tag')),
-              })}
-              onchange={(v: string) => this.tag(v)}
-            />
+            <label>{t('admin.steps.title')}</label>
+            <input className="FormControl" maxlength="150" placeholder={this.fallback('title')} bidi={this.label} />
           </div>
-        ) : null}
 
-        {fields.includes('path') ? (
           <div className="Form-group">
-            <label>{t('admin.steps.path')}</label>
-            <input className="FormControl" placeholder="/d/1-welcome" bidi={this.path} />
-            <p className="helpText">{t('admin.steps.path_help')}</p>
+            <label>{t('admin.steps.description')}</label>
+            <textarea className="FormControl" maxlength="1000" rows="2" placeholder={this.fallback('description')} bidi={this.description} />
           </div>
-        ) : null}
 
-        <div className="Form-group">
-          <label>{t('admin.steps.title')}</label>
-          <input className="FormControl" maxlength="150" placeholder={this.fallback('title')} bidi={this.label} />
-        </div>
+          <div className="OnrampStepModal-row">
+            <div className="Form-group">
+              <label>{t('admin.steps.button_label')}</label>
+              <input className="FormControl" maxlength="100" placeholder={this.fallback('button')} bidi={this.buttonLabel} />
+            </div>
+            <div className="Form-group">
+              <label>{t('admin.steps.button_url')}</label>
+              <input
+                className="FormControl"
+                maxlength="255"
+                placeholder={extractText(t('admin.steps.button_url_placeholder'))}
+                bidi={this.buttonUrl}
+              />
+            </div>
+          </div>
 
-        <div className="Form-group">
-          <label>{t('admin.steps.description')}</label>
-          <textarea className="FormControl" maxlength="1000" rows="2" placeholder={this.fallback('description')} bidi={this.description} />
-        </div>
+          <div className="OnrampStepModal-row">
+            <div className="Form-group">
+              <label>{t('admin.steps.icon')}</label>
+              <input className="FormControl" maxlength="100" placeholder={info?.icon || 'fas fa-star'} bidi={this.icon} />
+            </div>
+            <div className="Form-group">
+              <label>{t('admin.steps.points')}</label>
+              <input className="FormControl" type="number" min="0" max="100000" bidi={this.points} disabled={!meta?.points} />
+              {meta?.points ? null : <p className="helpText">{t('admin.needs_points')}</p>}
+            </div>
+          </div>
 
-        <div className="OnrampStepModal-row">
           <div className="Form-group">
-            <label>{t('admin.steps.button_label')}</label>
-            <input className="FormControl" maxlength="100" placeholder={this.fallback('button')} bidi={this.buttonLabel} />
+            <label>{t('admin.steps.badge')}</label>
+            {meta?.badges ? (
+              <Select
+                value={this.badgeId()}
+                options={(this.badges || []).reduce((o: Record<string, string>, b) => ({ ...o, [b.id]: b.name }), {
+                  '': extractText(t('admin.steps.no_badge')),
+                })}
+                onchange={(v: string) => this.badgeId(v)}
+              />
+            ) : (
+              <p className="helpText">{t('admin.needs_badges')}</p>
+            )}
           </div>
+
           <div className="Form-group">
-            <label>{t('admin.steps.button_url')}</label>
-            <input className="FormControl" maxlength="255" placeholder={extractText(t('admin.steps.button_url_placeholder'))} bidi={this.buttonUrl} />
+            <Switch state={this.required()} onchange={this.required}>
+              {t('admin.steps.required')}
+            </Switch>
+            <p className="helpText">{t('admin.steps.required_help')}</p>
           </div>
-        </div>
 
-        <div className="OnrampStepModal-row">
           <div className="Form-group">
-            <label>{t('admin.steps.icon')}</label>
-            <input className="FormControl" maxlength="100" placeholder={info?.icon || 'fas fa-star'} bidi={this.icon} />
+            <Switch state={this.enabled()} onchange={this.enabled}>
+              {t('admin.steps.enabled')}
+            </Switch>
           </div>
+
           <div className="Form-group">
-            <label>{t('admin.steps.points')}</label>
-            <input className="FormControl" type="number" min="0" max="100000" bidi={this.points} disabled={!meta?.points} />
-            {meta?.points ? null : <p className="helpText">{t('admin.needs_points')}</p>}
+            <Button className="Button Button--primary" type="submit" loading={this.loading}>
+              {t('admin.steps.save')}
+            </Button>
           </div>
-        </div>
-
-        <div className="Form-group">
-          <label>{t('admin.steps.badge')}</label>
-          {meta?.badges ? (
-            <Select
-              value={this.badgeId()}
-              options={(this.badges || []).reduce((o: Record<string, string>, b) => ({ ...o, [b.id]: b.name }), {
-                '': extractText(t('admin.steps.no_badge')),
-              })}
-              onchange={(v: string) => this.badgeId(v)}
-            />
-          ) : (
-            <p className="helpText">{t('admin.needs_badges')}</p>
-          )}
-        </div>
-
-        <div className="Form-group">
-          <Switch state={this.required()} onchange={this.required}>
-            {t('admin.steps.required')}
-          </Switch>
-          <p className="helpText">{t('admin.steps.required_help')}</p>
-        </div>
-
-        <div className="Form-group">
-          <Switch state={this.enabled()} onchange={this.enabled}>
-            {t('admin.steps.enabled')}
-          </Switch>
-        </div>
-
-        <div className="Form-group">
-          <Button className="Button Button--primary" type="submit" loading={this.loading}>
-            {t('admin.steps.save')}
-          </Button>
         </div>
       </div>
     );

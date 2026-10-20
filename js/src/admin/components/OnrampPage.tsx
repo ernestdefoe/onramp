@@ -505,6 +505,6 @@ export default class OnrampAdminPage extends ExtensionPage {
   }
 
   stepName(s: any): string {
-    return s ? s.title || extractText(t(`lib.types.${s.type}.title`, { count: 1, tag: '' })) : '';
+    return s ? s.title || extractText(t(`lib.types.${s.type}.title`, { count: s.target || 1, tag: '' })) : '';
   }
 }

@@ -128,6 +128,8 @@ class FunnelController implements RequestHandlerInterface
                 'id' => $step->id,
                 'type' => $step->type,
                 'title' => $step->title,
+                // For the type's own wording: "Read 3 discussions".
+                'target' => max(1, (int) ($step->settings()['count'] ?? 1)),
                 'reached' => $reached[$step->id],
                 'rate' => round($rate, 4),
                 'medianHours' => $this->median($hours[$step->id]),
