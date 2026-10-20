@@ -50,12 +50,39 @@ class EvaluateAfterRequest implements MiddlewareInterface
             return $response;
         }
 
+        $state = $this->presenter->summary($actor);
+
         $body['meta'] = (array) ($body['meta'] ?? []);
         $body['meta']['onramp'] = [
             'completed' => array_map(fn ($step) => $step->id, $mine['completed']),
             'graduated' => $mine['graduated'],
-            'state' => $this->presenter->summary($actor),
+            'state' => $state,
         ];
+
+        /*
+         * 🚨 The member's own user may be IN this response — a like returns
+         * the post with its likers, the actor among them — serialized before
+         * the steps were evaluated, so with the old journey. The browser
+         * applies that copy after reading the meta, and the ring would go
+         * back to the old count. So every copy of the actor's own user here
+         * gets the fresh journey too.
+         */
+        foreach (['data', 'included'] as $member) {
+            if (! isset($body[$member]) || ! is_array($body[$member])) {
+                continue;
+            }
+
+            $resources = array_is_list($body[$member]) ? $body[$member] : [$body[$member]];
+
+            foreach ($resources as $i => $resource) {
+                if (($resource['type'] ?? null) === 'users' && (string) ($resource['id'] ?? '') === (string) $actor->id
+                    && is_array($resource['attributes'] ?? null) && array_key_exists('onramp', $resource['attributes'])) {
+                    $resources[$i]['attributes']['onramp'] = $state;
+                }
+            }
+
+            $body[$member] = array_is_list($body[$member]) ? $resources : $resources[0];
+        }
 
         $json = (string) json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 

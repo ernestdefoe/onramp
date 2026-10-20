@@ -228,6 +228,25 @@ class JourneyTest extends TestCase
     }
 
     #[Test]
+    public function the_actors_own_user_in_the_same_response_carries_the_fresh_journey(): void
+    {
+        $this->journeys()->start($this->user(3));
+
+        // A like returns the post with its likers — Carol among them.
+        $response = $this->send($this->request('PATCH', '/api/posts/1', [
+            'authenticatedAs' => 3,
+            'json' => ['data' => ['type' => 'posts', 'id' => '1', 'attributes' => ['isLiked' => true]]],
+        ])->withQueryParams(['include' => 'likes']));
+        $body = json_decode((string) $response->getBody(), true);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $self = collect($body['included'] ?? [])->first(fn ($r) => $r['type'] === 'users' && $r['id'] === '3');
+        $this->assertNotNull($self, 'Carol is in the response');
+        $this->assertSame(1, $self['attributes']['onramp']['done']);
+        $this->assertSame(1, $body['meta']['onramp']['state']['done']);
+    }
+
+    #[Test]
     public function new_members_start_a_journey_when_they_register(): void
     {
         $this->setting('allow_sign_up', '1');
