@@ -162,6 +162,8 @@ ernestdefoe-onramp:
       reset_confirm: Start this member's journey over? Rewards already paid are not paid again.
 
   admin:
+    widgets:
+      journey: Your journey
     permissions:
       view_members: View members' Onramp journeys
 

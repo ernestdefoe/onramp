@@ -3,8 +3,8 @@ import Component from 'flarum/common/Component';
 import { t } from '../common/text';
 import { own, showsLauncher } from './state';
 import { journeyChunk } from './lazy';
+import { fof, hasFofWidgets, placed } from '../common/fofWidgets';
 
-declare const flarum: any;
 declare const m: import('mithril').Static;
 
 /**
@@ -25,10 +25,6 @@ export class JourneyWidget extends Component {
     const Body = journeyChunk.loaded?.WidgetBody;
     return Body ? <Body /> : null;
   }
-}
-
-export function hasFofWidgets(): boolean {
-  return typeof flarum !== 'undefined' && !!flarum?.extensions && 'fof-forum-widgets-core' in flarum.extensions;
 }
 
 /**
@@ -52,11 +48,9 @@ export function registerWidgets(): void {
     });
   }
 
-  if (hasFofWidgets()) {
-    const widgetsMod = flarum.reg?.get?.('fof-forum-widgets-core', 'common/extend/Widgets');
-    const widgetMod = flarum.reg?.get?.('fof-forum-widgets-core', 'common/components/Widget');
-    const Widgets = widgetsMod?.default ?? widgetsMod;
-    const WidgetBase = (widgetMod?.default ?? widgetMod) as { new (...args: any[]): any } | undefined;
+  if (hasFofWidgets() && (app as any).widgets) {
+    const Widgets = fof('common/extend/Widgets');
+    const WidgetBase = fof('common/components/Widget') as { new (...args: any[]): any } | undefined;
     if (!Widgets || !WidgetBase) return;
 
     class JourneyFofWidget extends WidgetBase {
@@ -84,8 +78,22 @@ export function registerWidgets(): void {
     }
 
     new Widgets()
-      .add({ key: 'onrampJourney', component: JourneyFofWidget, isDisabled: false, isUnique: true, placement: 'start', position: 0 })
+      .add({
+        key: 'onrampJourney',
+        component: JourneyFofWidget,
+        // 🚨 Opt-in: only where the admin placed it in FoF's layout editor
+        // (see common/fofWidgets.ts), and only for a member with an open
+        // journey — FoF draws its section for any widget it is given.
+        isDisabled: () => !placed(app, 'ernestdefoe-onramp', 'onrampJourney') || own()?.status !== 'open',
+        isUnique: true,
+        // 'start' is not a FoF section: the widget could never be drawn.
+        placement: 'start_top',
+        position: 0,
+      })
       .extend(app, 'ernestdefoe-onramp');
+
+    // Registered after FoF drew its sections; a placed widget appears now.
+    m.redraw();
   }
 }
 

@@ -12,7 +12,8 @@ import { t } from '../common/text';
 import Launcher from './components/Launcher';
 import { act, celebrate, own, remember, showsLauncher, stale } from './state';
 import { GraduatedNotification, ReminderNotification, StepCompletedNotification } from './notifications';
-import { hasFofWidgets, JourneyWidget, registerWidgets } from './widgets';
+import { JourneyWidget, registerWidgets } from './widgets';
+import { placed } from '../common/fofWidgets';
 
 declare const m: import('mithril').Static;
 
@@ -44,11 +45,12 @@ app.initializers.add('ernestdefoe/onramp', () => {
     items.add('onramp', LinkButton.component({ href: app.route('onramp'), icon: 'fas fa-route' }, t('forum.page.title')), 7);
   });
 
-  // The stock sidebar gets the widget on the index when no widget host is
-  // there to place it — only for members on a journey, so nobody else's
-  // sidebar changes at all.
+  // The stock sidebar gets the widget on the index unless FoF's layout places
+  // it — only for members on a journey, so nobody else's sidebar changes at
+  // all. 🚨 Placed, not installed: FoF installed with no Onramp widget placed
+  // used to leave the member with no journey card anywhere.
   extend(IndexSidebar.prototype, 'items', function (items: ItemList<any>) {
-    if (!showsLauncher() || hasFofWidgets() || !app.current?.matches(IndexPage)) return;
+    if (!showsLauncher() || placed(app, 'ernestdefoe-onramp', 'onrampJourney') || !app.current?.matches(IndexPage)) return;
     items.add('onrampJourney', m(JourneyWidget), -15);
   });
 
