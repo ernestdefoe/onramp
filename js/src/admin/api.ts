@@ -1,4 +1,5 @@
 import app from 'flarum/admin/app';
+import isExtensionEnabled from 'flarum/admin/utils/isExtensionEnabled';
 
 export interface AdminStep {
   id: number;
@@ -28,6 +29,9 @@ export interface Listing {
   data: AdminStep[];
   meta: { types: TypeInfo[]; points: boolean; badges: boolean };
 }
+
+/** Why points are off: no Gamification at all, or one without point grants. */
+export const pointsHint = () => (isExtensionEnabled('fof-gamification') ? 'admin.needs_points' : 'admin.needs_gamification');
 
 const base = () => app.forum.attribute('apiUrl') + '/onramp-admin';
 

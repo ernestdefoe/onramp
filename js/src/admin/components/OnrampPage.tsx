@@ -8,7 +8,7 @@ import extractText from 'flarum/common/utils/extractText';
 import isExtensionEnabled from 'flarum/admin/utils/isExtensionEnabled';
 import classList from 'flarum/common/utils/classList';
 import type { AdminStep } from '../api';
-import { funnel, importSteps, load, loadBadges, order, presets, remove, startExisting, store } from '../api';
+import { funnel, importSteps, load, loadBadges, order, pointsHint, presets, remove, startExisting, store } from '../api';
 import { t } from '../../common/text';
 import StepModal from './StepModal';
 
@@ -110,7 +110,9 @@ export default class OnrampAdminPage extends ExtensionPage {
       <div className="OnrampAdmin-steps">
         <p className="helpText">{t('admin.steps.intro')}</p>
 
-        {listing.meta.points ? null : <p className="Alert OnrampAdmin-note">{t('admin.needs_points')}</p>}
+        {/* Only when Gamification is on but too old to take grants: without it
+            there are no points to explain. */}
+        {!listing.meta.points && isExtensionEnabled('fof-gamification') ? <p className="Alert OnrampAdmin-note">{t('admin.needs_points')}</p> : null}
 
         <ol className="OnrampAdmin-list" oncreate={(v: any) => this.makeSortable(v.dom)}>
           {listing.data.map((step) => this.row(step))}
@@ -161,8 +163,10 @@ export default class OnrampAdminPage extends ExtensionPage {
           <div className="OnrampAdmin-title">{title}</div>
           <div className="OnrampAdmin-meta">
             <span>{t(`admin.types.${step.type}`)}</span>
-            {step.points ? <span className="OnrampAdmin-chip">{t('admin.steps.points_short', { count: step.points })}</span> : null}
-            {step.badgeId ? (
+            {step.points && store.listing?.meta.points ? (
+              <span className="OnrampAdmin-chip">{t('admin.steps.points_short', { count: step.points })}</span>
+            ) : null}
+            {step.badgeId && store.listing?.meta.badges ? (
               <span className="OnrampAdmin-chip">
                 <Icon name="fas fa-award" /> {t('admin.steps.has_badge')}
               </span>
@@ -246,6 +250,19 @@ export default class OnrampAdminPage extends ExtensionPage {
     });
   }
 
+  /**
+   * When the finishing reward is paid — said only about a reward that is both
+   * possible (its extension is on) and set. A group alone explains itself.
+   */
+  rewardHelp() {
+    const meta = store.listing?.meta;
+    const points = !!meta?.points && Number(this.setting(key('reward_points'))()) > 0;
+    const badge = !!meta?.badges && Number(this.setting(key('reward_badge'))()) > 0;
+    if (!points && !badge) return null;
+
+    return <p className="helpText">{t(`admin.settings.reward_help_${points && badge ? 'both' : points ? 'points' : 'badge'}`)}</p>;
+  }
+
   // —— Settings —————————————————————————————————————————————————————————
 
   settingsTab() {
@@ -272,7 +289,7 @@ export default class OnrampAdminPage extends ExtensionPage {
           })}
 
           <h3>{t('admin.settings.reward_heading')}</h3>
-          <p className="helpText">{t('admin.settings.reward_help')}</p>
+          {this.rewardHelp()}
           {meta?.points ? (
             this.buildSettingComponent({
               setting: key('reward_points'),
@@ -282,7 +299,7 @@ export default class OnrampAdminPage extends ExtensionPage {
               label: t('admin.settings.reward_points'),
             })
           ) : (
-            <p className="helpText">{t('admin.needs_points')}</p>
+            <p className="helpText">{t(pointsHint())}</p>
           )}
           {meta?.badges ? (
             this.buildSettingComponent({

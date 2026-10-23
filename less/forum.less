@@ -25,6 +25,7 @@
     stroke-width: 3.2;
   }
 
+  // The done arc is the solid one; what is left is a faint track under it.
   &-track {
     stroke: var(--control-bg);
   }
@@ -46,15 +47,36 @@
 
 // —— Header launcher —————————————————————————————————————————————————————
 .OnrampLauncher {
+  // 🚨 The closed button's ring is drawn in the header's own colours, never
+  // --primary-color: a coloured header IS the primary colour, so a primary arc
+  // vanished there and the light control-bg track read as the progress. The
+  // done arc takes --header-color (the forum title's colour: primary on a
+  // plain header, white on a coloured one), the rest a faint control colour.
+  // Scoped to the button: the open panel's ring sits on the menu's own bg.
   &-label {
     display: inline-flex;
     align-items: center;
     gap: 6px;
+
+    .OnrampRing-track {
+      stroke: currentColor;
+      stroke-opacity: 0.25;
+    }
+
+    .OnrampRing-fill {
+      stroke: var(--header-color);
+    }
   }
 
   &-count {
-    font-weight: 600;
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
+
+    // A coloured header's control colour is a 60% tint of the header itself —
+    // too faint for a number that is read, not just seen.
+    [data-colored-header='true'] & {
+      color: var(--header-color);
+    }
   }
 
   &-menu {

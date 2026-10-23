@@ -6,7 +6,7 @@ import Switch from 'flarum/common/components/Switch';
 import extractText from 'flarum/common/utils/extractText';
 import Stream from 'flarum/common/utils/Stream';
 import type { AdminStep, BadgeOption, TypeInfo } from '../api';
-import { loadBadges, save, store } from '../api';
+import { loadBadges, pointsHint, save, store } from '../api';
 import { t } from '../../common/text';
 
 declare const m: import('mithril').Static;
@@ -46,7 +46,7 @@ export default class StepModal extends FormModal<StepModalAttrs> {
     this.icon = Stream(s?.icon ?? '');
     this.buttonLabel = Stream(s?.buttonLabel ?? '');
     this.buttonUrl = Stream(s?.buttonUrl ?? '');
-    this.points = Stream(String(s?.points ?? 10));
+    this.points = Stream(String(s?.points ?? (store.listing?.meta.points ? 10 : 0)));
     this.badgeId = Stream(String(s?.badgeId ?? ''));
     this.required = Stream(!!s?.required);
     this.enabled = Stream(s ? s.enabled : true);
@@ -160,7 +160,7 @@ export default class StepModal extends FormModal<StepModalAttrs> {
             <div className="Form-group">
               <label>{t('admin.steps.points')}</label>
               <input className="FormControl" type="number" min="0" max="100000" bidi={this.points} disabled={!meta?.points} />
-              {meta?.points ? null : <p className="helpText">{t('admin.needs_points')}</p>}
+              {meta?.points ? null : <p className="helpText">{t(pointsHint())}</p>}
             </div>
           </div>
 
