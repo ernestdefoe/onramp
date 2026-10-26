@@ -57,6 +57,15 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
+    // Exactly one line tall, like the other header buttons: the 22px ring and the
+    // baseline gap under an inline box made this button 43px against their 36px
+    // (ClaudiusH, Discuss d/40126 #6). The ring overhangs by a pixel instead.
+    height: 20px;
+    vertical-align: top;
+
+    .OnrampRing {
+      margin: -1px 0;
+    }
 
     .OnrampRing-track {
       stroke: currentColor;
